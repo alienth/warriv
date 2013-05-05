@@ -1,7 +1,9 @@
+import cryptacular.bcrypt
 from sqlalchemy import (
     Column,
     Integer,
     Text,
+    Unicode,
     )
 
 from sqlalchemy.ext.declarative import declarative_base
@@ -16,6 +18,11 @@ from zope.sqlalchemy import ZopeTransactionExtension
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
 
+crypt = cryptacular.bcrypt.BCRYPTPasswordManager()
+
+def hash_password(password):
+    return unicode(crypt.encode(password))
+
 
 class Account(Base):
     __tablename__ = 'account'
@@ -23,6 +30,17 @@ class Account(Base):
     username = Column(Text, unique=True)
     password = Column(Text)
     oauth_token = Column(Text)
+
+    _password = Column('password', Unicode(60))
+
+
+    def _get_password(self):
+      return self._password
+
+    def _set_password(self, password):
+      self._password = hash_password(password)
+
+    password = property(_get_password, _set_password)
 
     def __init__(self, username='', password='', oauth_token=''):
         self.username = username

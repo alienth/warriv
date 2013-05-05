@@ -16,6 +16,7 @@ requires = [
     'zope.sqlalchemy',
     'waitress',
     'formencode',
+    'cryptacular',
     ]
 
 setup(name='warriv',

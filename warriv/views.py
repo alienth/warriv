@@ -3,6 +3,8 @@ from pyramid.view import view_config
 
 from pyramid_simpleform import Form
 
+from pyramid.security import authenticated_userid, remember, forget
+
 from warriv.schema.default import RegistrationSchema
 
 import logging
@@ -30,7 +32,7 @@ def front(request):
     return {}
 
 
-@view_config(route_name='api_action', match_param='action=register')
+@view_config(route_name='api_action', match_param='action=register', renderer='json')
 def register(request):
 
     form = Form(request, schema=RegistrationSchema())
@@ -38,10 +40,19 @@ def register(request):
     if form.validate():
       account = form.bind(Account())
       DBSession.add(account)
-      return {}
+      DBSession.flush()
+
+      headers = remember(request, 'asdf')
+      log.info('headers: %s' % headers)
+      request.response.headerlist.extend(headers)
+
+      log.info(request.response.headerlist)
+
+      return { 'success': True }
 
 
     log.info(form.errors)
 
     return {}
+
 
