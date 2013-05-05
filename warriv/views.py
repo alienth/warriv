@@ -30,17 +30,14 @@ def front(request):
     return {}
 
 
-@view_config(route_name='api_action', match_param='action=register', renderer='templates/front.pt')
+@view_config(route_name='api_action', match_param='action=register')
 def register(request):
 
     form = Form(request, schema=RegistrationSchema())
 
     if form.validate():
-
       account = form.bind(Account())
-
       DBSession.add(account)
-
       return {}
 
 
