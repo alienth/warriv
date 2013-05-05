@@ -12,8 +12,10 @@ requires = [
     'transaction',
     'pyramid_tm',
     'pyramid_debugtoolbar',
+    'pyramid_simpleform',
     'zope.sqlalchemy',
     'waitress',
+    'formencode',
     ]
 
 setup(name='warriv',
