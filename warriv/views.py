@@ -1,11 +1,11 @@
 from pyramid.response import Response
 from pyramid.view import view_config
 
-from formencode import Schema, validators
 from pyramid_simpleform import Form
 
-import logging
+from warriv.schema.default import RegistrationSchema
 
+import logging
 log = logging.getLogger(__name__)
 
 
@@ -19,11 +19,6 @@ from .models import (
     )
 
 
-class AccountSchema(Schema):
-
-    username = validators.PlainText(max=20, min=3)
-    password = validators.UnicodeString(max=40, min=5)
-
 @view_config(route_name='front', renderer='templates/front.pt')
 def front(request):
     pass
@@ -35,17 +30,12 @@ def front(request):
     return {}
 
 
-@view_config(route_name='api_register', renderer='templates/front.pt')
+@view_config(route_name='api_action', match_param='action=register', renderer='templates/front.pt')
 def register(request):
 
-    form = Form(request, schema=AccountSchema())
+    form = Form(request, schema=RegistrationSchema())
 
     if form.validate():
-
-      if Account.by_username(form.data['username']):
-          form.errors = 'username already taken'
-          log.info(form.errors)
-          return {}
 
       account = form.bind(Account())
 
