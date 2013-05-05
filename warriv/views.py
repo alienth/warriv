@@ -42,11 +42,8 @@ def register(request):
       DBSession.add(account)
       DBSession.flush()
 
-      headers = remember(request, 'asdf')
-      log.info('headers: %s' % headers)
+      headers = remember(request, account.id)
       request.response.headerlist.extend(headers)
-
-      log.info(request.response.headerlist)
 
       return { 'success': True }
 
