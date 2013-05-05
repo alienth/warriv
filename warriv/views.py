@@ -47,9 +47,6 @@ def register(request):
 
       return { 'success': True }
 
-
-    log.info(form.errors)
-
-    return {}
+    return { 'error': form.errors }
 
 
