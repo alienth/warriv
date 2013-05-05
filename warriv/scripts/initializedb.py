@@ -12,6 +12,8 @@ from pyramid.paster import (
 from ..models import (
     DBSession,
     Account,
+    Hero,
+    Ladder,
     Base,
     )
 
