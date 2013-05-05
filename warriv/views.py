@@ -38,15 +38,34 @@ def register(request):
     form = Form(request, schema=RegistrationSchema())
 
     if form.validate():
-      account = form.bind(Account())
-      DBSession.add(account)
-      DBSession.flush()
+        account = form.bind(Account())
+        DBSession.add(account)
+        DBSession.flush()
 
-      headers = remember(request, account.id)
-      request.response.headerlist.extend(headers)
+        headers = remember(request, account.id)
+        request.response.headerlist.extend(headers)
 
-      return { 'success': True }
+        return { 'success': True }
 
     return { 'error': form.errors }
+
+
+@view_config(route_name='api_action', match_param='action=login', renderer='json')
+def api_login(request):
+
+    data = request.POST
+
+    if 'username' in data and 'password' in data:
+        account = Account.login(username=data['username'], password=data['password'])
+
+        if account:
+            log.info('%s' % account.id)
+
+            headers = remember(request, account.id)
+            request.response.headerlist.extend(headers)
+
+            return { 'success': True }
+
+    return { 'error': 'login failed' }
 
 

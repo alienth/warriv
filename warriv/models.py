@@ -42,6 +42,18 @@ class Account(Base):
 
     password = property(_get_password, _set_password)
 
+    @classmethod
+    def login(cls, username='', password=''):
+        account = cls.by_username(username)
+
+        if not account:
+            return False
+        if crypt.check(account.password, password):
+            return account
+
+        return False
+
+
     def __init__(self, username='', password='', oauth_token=''):
         self.username = username
         self.password = password
