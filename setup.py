@@ -17,6 +17,7 @@ requires = [
     'waitress',
     'formencode',
     'cryptacular',
+    'rauth',
     ]
 
 setup(name='warriv',
