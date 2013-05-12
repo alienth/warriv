@@ -4,7 +4,7 @@ from pyramid.view import view_config
 from pyramid_simpleform import Form
 
 from pyramid.security import authenticated_userid, remember, forget
-from pyramid.httpexceptions import HTTPFound
+from pyramid.httpexceptions import HTTPFound, HTTPForbidden
 
 from warriv.schema.default import RegistrationSchema
 
@@ -80,7 +80,7 @@ def api_login(request):
         if account:
             log.info('%s' % account.id)
 
-            headers = remember(request, account.id)
+            headers = remember(request, account.id, blah='blah')
             request.response.headerlist.extend(headers)
 
             return { 'success': True }
@@ -95,7 +95,9 @@ def oauth_login(request):
 
     redirect_uri = request.registry.settings['redirect_uri']
 
+    # Using remember() for CSRF token storing
     state = sha1(str(random())).hexdigest()
+    headers = remember(request, state)
 
     params = { 'scope': 'identity',
                'response_type': 'code',
@@ -106,19 +108,21 @@ def oauth_login(request):
 
     authorize_url = reddit.get_authorize_url(**params)
 
-    headers = remember(request, state)
 
     return HTTPFound(location=authorize_url, headers=headers)
 
 @view_config(route_name='oauth_action', match_param='action=callback', renderer='json')
 def oauth_callback(request):
 
-    log.info(request.params)
-
     state = request.params['state']
     code = request.params['code']
     reddit = reddit_oauth(request)
     redirect_uri = request.registry.settings['redirect_uri']
+
+    stored_state = authenticated_userid(request)
+
+    if stored_state != state:
+        return HTTPForbidden()
 
     data = { 'code': code,
              'redirect_uri': redirect_uri,
@@ -130,8 +134,6 @@ def oauth_callback(request):
     s = reddit.get_auth_session(data=data,
                                 auth=creds,
                                 decoder=json.loads)
-
-    log.info(reddit.get_access_token(data=data, auth=creds))
 
     user = s.get('me').json()
 
