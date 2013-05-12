@@ -38,7 +38,6 @@ class OauthHandler(object):
                    'response_type': 'code',
                    'redirect_uri': self.redirect_uri,
                    'state': state,
-                   'duration': 'permanent',
                  }
 
         authorize_url = self.reddit.get_authorize_url(**params)
