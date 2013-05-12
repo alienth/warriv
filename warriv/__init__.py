@@ -21,5 +21,6 @@ def main(global_config, **settings):
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('front', '/')
     config.add_route('api_action', '/api/{action}')
+    config.add_route('oauth_action', '/oauth/{action}')
     config.scan()
     return config.make_wsgi_app()

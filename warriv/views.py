@@ -4,11 +4,17 @@ from pyramid.view import view_config
 from pyramid_simpleform import Form
 
 from pyramid.security import authenticated_userid, remember, forget
+from pyramid.httpexceptions import HTTPFound
 
 from warriv.schema.default import RegistrationSchema
 
 import logging
 log = logging.getLogger(__name__)
+
+from rauth import OAuth2Service
+
+from hashlib import sha1
+from random import random
 
 
 from sqlalchemy.exc import DBAPIError
@@ -69,3 +75,29 @@ def api_login(request):
     return { 'error': 'login failed' }
 
 
+@view_config(route_name='oauth_action', match_param='action=login')
+def oauth_login(request):
+
+    client_id = request.registry.settings['oauth_client_id']
+    secret = request.registry.settings['oauth_secret']
+    oauth_url = request.registry.settings['oauth_url']
+
+    reddit = OAuth2Service(client_id, secret,
+                           authorize_url=oauth_url + 'authorize',
+                           access_token_url=oauth_url + 'access_token',
+                           base_url=oauth_url)
+
+    redirect_uri = request.registry.settings['redirect_uri']
+
+    state = sha1(str(random())).hexdigest()
+
+    params = { 'scope': 'identity',
+               'response_type': 'code',
+               'redirect_uri': redirect_uri,
+               'state': state,
+               'duration': 'permanent',
+             }
+
+    authorize_url = reddit.get_authorize_url(**params)
+
+    return HTTPFound(location=authorize_url)
