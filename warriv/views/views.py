@@ -21,6 +21,7 @@ from warriv.models import (
     Ladder,
     )
 
+import time
 
 
 @view_config(route_name='front', renderer='templates/front.pt')
@@ -44,7 +45,7 @@ def register(request):
         DBSession.add(account)
         DBSession.flush()
 
-        headers = remember(request, account.id)
+        headers = remember(request, account.id, max_age=86400000)
         request.response.headerlist.extend(headers)
 
         return { 'success': True }
@@ -63,7 +64,7 @@ def api_login(request):
         if account:
             log.info('%s' % account.id)
 
-            headers = remember(request, account.id, blah='blah')
+            headers = remember(request, account.id, max_age=86400000)
             request.response.headerlist.extend(headers)
 
             return { 'success': True }
