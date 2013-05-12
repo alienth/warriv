@@ -16,6 +16,8 @@ from rauth import OAuth2Service
 from hashlib import sha1
 from random import random
 
+import json
+
 
 from sqlalchemy.exc import DBAPIError
 
@@ -25,6 +27,17 @@ from .models import (
     Hero,
     Ladder,
     )
+
+
+def reddit_oauth(request):
+    client_id = request.registry.settings['oauth_client_id']
+    secret = request.registry.settings['oauth_secret']
+    oauth_url = request.registry.settings['oauth_url']
+
+    return OAuth2Service(client_id, secret,
+                           authorize_url=oauth_url + 'authorize',
+                           access_token_url=oauth_url + 'access_token',
+                           base_url=oauth_url)
 
 
 @view_config(route_name='front', renderer='templates/front.pt')
@@ -78,14 +91,7 @@ def api_login(request):
 @view_config(route_name='oauth_action', match_param='action=login')
 def oauth_login(request):
 
-    client_id = request.registry.settings['oauth_client_id']
-    secret = request.registry.settings['oauth_secret']
-    oauth_url = request.registry.settings['oauth_url']
-
-    reddit = OAuth2Service(client_id, secret,
-                           authorize_url=oauth_url + 'authorize',
-                           access_token_url=oauth_url + 'access_token',
-                           base_url=oauth_url)
+    reddit = reddit_oauth(request)
 
     redirect_uri = request.registry.settings['redirect_uri']
 
@@ -100,4 +106,33 @@ def oauth_login(request):
 
     authorize_url = reddit.get_authorize_url(**params)
 
-    return HTTPFound(location=authorize_url)
+    headers = remember(request, state)
+
+    return HTTPFound(location=authorize_url, headers=headers)
+
+@view_config(route_name='oauth_action', match_param='action=callback', renderer='json')
+def oauth_callback(request):
+
+    log.info(request.params)
+
+    state = request.params['state']
+    code = request.params['code']
+    reddit = reddit_oauth(request)
+    redirect_uri = request.registry.settings['redirect_uri']
+
+    data = { 'code': code,
+             'redirect_uri': redirect_uri,
+             'grant_type': 'authorization_code',
+           }
+
+    creds = (request.registry.settings['oauth_client_id'], request.registry.settings['oauth_secret'])
+
+    s = reddit.get_auth_session(data=data,
+                                auth=creds,
+                                decoder=json.loads)
+
+    log.info(reddit.get_access_token(data=data, auth=creds))
+
+    user = s.get('me').json()
+
+    return user
