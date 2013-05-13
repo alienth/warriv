@@ -18,6 +18,7 @@ requires = [
     'formencode',
     'cryptacular',
     'rauth',
+    'requests',
     ]
 
 setup(name='warriv',
