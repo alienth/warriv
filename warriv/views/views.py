@@ -26,7 +26,17 @@ import time
 class BaseHandler(object):
 
     def __init__(self, request):
+
+        userid = authenticated_userid(request)
+
+        if userid:
+            account = Account.by_id(userid)
+
+            if account:
+                self.account = account
+                log.info(account.username)
         self.request = request
+
 
 @view_config(route_name='front', renderer='warriv:templates/front.pt')
 def front(request):
