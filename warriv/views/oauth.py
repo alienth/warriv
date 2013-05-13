@@ -12,13 +12,13 @@ log = logging.getLogger(__name__)
 
 from warriv.models import DBSession, Account
 
+from warriv.views.views import BaseHandler
 
-class OauthHandler(object):
+
+class OauthHandler(BaseHandler):
 
 
     def __init__(self, request):
-        self.request = request
-
         self.client_id = request.registry.settings['oauth_client_id']
         self.secret = request.registry.settings['oauth_secret']
         self.oauth_url = request.registry.settings['oauth_url']
@@ -29,12 +29,15 @@ class OauthHandler(object):
                            access_token_url=self.oauth_url + 'access_token',
                            base_url=self.oauth_url)
 
+        super(OauthHandler, self).__init__(request)
+
 
 
     @view_config(route_name='oauth_action', match_param='action=login')
     def oauth_login(self):
 
         # Using remember() for CSRF token storing
+        # TODO: store this somewhere else
         state = sha1(str(random())).hexdigest()
         headers = remember(self.request, state)
 

@@ -23,6 +23,10 @@ from warriv.models import (
 
 import time
 
+class BaseHandler(object):
+
+    def __init__(self, request):
+        self.request = request
 
 @view_config(route_name='front', renderer='warriv:templates/front.pt')
 def front(request):

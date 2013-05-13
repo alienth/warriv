@@ -20,11 +20,13 @@ from warriv.models import (
     Ladder,
     )
 
-class APIHandler(object):
+from warriv.views.views import BaseHandler
+
+class APIHandler(BaseHandler):
 
 
     def __init__(self, request):
-        self.request = request
+        super(APIHandler, self).__init__(request)
 
 
     @view_config(route_name='api_action', match_param='action=register', renderer='json')
