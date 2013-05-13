@@ -72,3 +72,10 @@ def api_login(request):
     return { 'error': 'login failed' }
 
 
+@view_config(route_name='api_action', match_param='action=logout', renderer='json')
+def api_login(request):
+
+    headers = forget(request)
+    request.response.headerlist.extend(headers)
+
+    return { 'logout': True }
