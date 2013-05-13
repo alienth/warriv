@@ -24,7 +24,7 @@ from warriv.models import (
 import time
 
 
-@view_config(route_name='front', renderer='templates/front.pt')
+@view_config(route_name='front', renderer='warriv:templates/front.pt')
 def front(request):
     pass
 #    try:
