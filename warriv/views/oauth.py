@@ -7,6 +7,10 @@ from hashlib import sha1
 from random import random
 import json
 
+import logging
+log = logging.getLogger(__name__)
+
+from warriv.models import DBSession, Account
 
 
 class OauthHandler(object):
@@ -48,8 +52,10 @@ class OauthHandler(object):
     @view_config(route_name='oauth_action', match_param='action=callback', renderer='json')
     def oauth_callback(self):
 
-        state = self.request.params['state']
-        code = self.request.params['code']
+        params = self.request.params
+
+        state = params.get('state')
+        code = params.get('code', '')
 
         stored_state = authenticated_userid(self.request)
 
@@ -61,12 +67,32 @@ class OauthHandler(object):
                  'grant_type': 'authorization_code',
                }
 
-        creds = (self.request.registry.settings['oauth_client_id'], self.request.registry.settings['oauth_secret'])
+        creds = (self.client_id, self.secret)
 
-        s = self.reddit.get_auth_session(data=data,
-                                    auth=creds,
-                                    decoder=json.loads)
+        try:
+            s = self.reddit.get_auth_session(data=data,
+                                             auth=creds,
+                                             decoder=json.loads)
+        except:
+            return {}
 
-        user = s.get('me').json()
+        identity = s.get('me').json()
 
-        return user
+        assert 'name' in identity
+
+        username = identity['name'] + '@reddit.com'
+
+        account = Account.by_username(username)
+
+        if account:
+            headers = remember(self.request, account.id, max_age=86400000)
+            return HTTPFound(location='/', headers=headers)
+        else:
+            account = Account(username=username)
+            DBSession.add(account)
+            DBSession.flush()
+
+            headers = remember(self.request, account.id, max_age=86400000)
+            return HTTPFound(location='/account/setup', headers=headers)
+
+        return {}
