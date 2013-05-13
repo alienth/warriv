@@ -50,6 +50,10 @@ class APIHandler(BaseHandler):
     @view_config(route_name='api_action', match_param='action=login', renderer='json')
     def api_login(self):
 
+        # Bail out if we're already loggedin
+        if self.loggedin:
+            return HTTPFound(location="/")
+
         data = self.request.POST
 
         if 'username' in data and 'password' in data:

@@ -36,6 +36,10 @@ class OauthHandler(BaseHandler):
     @view_config(route_name='oauth_action', match_param='action=login')
     def oauth_login(self):
 
+        # Bail out if we're already loggedin
+        if self.loggedin:
+            return HTTPFound(location="/")
+
         # Using remember() for CSRF token storing
         # TODO: store this somewhere else
         state = sha1(str(random())).hexdigest()

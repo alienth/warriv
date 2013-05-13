@@ -25,6 +25,8 @@ import time
 
 class BaseHandler(object):
 
+    loggedin = False
+
     def __init__(self, request):
 
         userid = authenticated_userid(request)
@@ -34,6 +36,7 @@ class BaseHandler(object):
 
             if account:
                 self.account = account
+                self.loggedin = True
 
         self.request = request
 
