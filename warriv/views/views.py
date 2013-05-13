@@ -6,8 +6,6 @@ from pyramid_simpleform import Form
 from pyramid.security import authenticated_userid, remember, forget
 from pyramid.httpexceptions import HTTPFound, HTTPForbidden
 
-from warriv.schema.default import RegistrationSchema
-
 import logging
 log = logging.getLogger(__name__)
 
