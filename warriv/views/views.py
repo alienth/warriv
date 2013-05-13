@@ -39,6 +39,7 @@ class BaseHandler(object):
                 self.loggedin = True
 
                 self.tmpl['username'] = self.account.username
+                self.tmpl['battletag'] = self.account.battletag
 
         self.tmpl['loggedin'] = self.loggedin
         self.request = request
