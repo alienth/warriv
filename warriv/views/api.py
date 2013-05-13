@@ -48,7 +48,7 @@ class APIHandler(BaseHandler):
 
 
     @view_config(route_name='api_action', match_param='action=login', renderer='json')
-    def api_login(self):
+    def login(self):
 
         # Bail out if we're already loggedin
         if self.loggedin:
@@ -71,7 +71,7 @@ class APIHandler(BaseHandler):
 
 
     @view_config(route_name='api_action', match_param='action=logout', renderer='json')
-    def api_logout(self):
+    def logout(self):
 
         headers = forget(self.request)
         self.request.response.headerlist.extend(headers)
