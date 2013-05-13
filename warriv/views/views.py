@@ -34,7 +34,7 @@ class BaseHandler(object):
 
             if account:
                 self.account = account
-                log.info(account.username)
+
         self.request = request
 
 
