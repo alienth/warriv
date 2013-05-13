@@ -20,48 +20,54 @@ from warriv.models import (
     Ladder,
     )
 
-
-@view_config(route_name='api_action', match_param='action=register', renderer='json')
-def register(request):
-
-    form = Form(request, schema=RegistrationSchema())
-
-    if form.validate():
-        account = form.bind(Account())
-        DBSession.add(account)
-        DBSession.flush()
-
-        headers = remember(request, account.id, max_age=86400000)
-        request.response.headerlist.extend(headers)
-
-        return { 'success': True }
-
-    return { 'error': form.errors }
+class APIHandler(object):
 
 
-@view_config(route_name='api_action', match_param='action=login', renderer='json')
-def api_login(request):
+    def __init__(self, request):
+        self.request = request
 
-    data = request.POST
 
-    if 'username' in data and 'password' in data:
-        account = Account.login(username=data['username'], password=data['password'])
+    @view_config(route_name='api_action', match_param='action=register', renderer='json')
+    def register(self):
 
-        if account:
-            log.info('%s' % account.id)
+        form = Form(self.request, schema=RegistrationSchema())
 
-            headers = remember(request, account.id, max_age=86400000)
-            request.response.headerlist.extend(headers)
+        if form.validate():
+            account = form.bind(Account())
+            DBSession.add(account)
+            DBSession.flush()
+
+            headers = remember(self.request, account.id, max_age=86400000)
+            self.request.response.headerlist.extend(headers)
 
             return { 'success': True }
 
-    return { 'error': 'login failed' }
+        return { 'error': form.errors }
 
 
-@view_config(route_name='api_action', match_param='action=logout', renderer='json')
-def api_login(request):
+    @view_config(route_name='api_action', match_param='action=login', renderer='json')
+    def api_login(self):
 
-    headers = forget(request)
-    request.response.headerlist.extend(headers)
+        data = self.request.POST
 
-    return { 'logout': True }
+        if 'username' in data and 'password' in data:
+            account = Account.login(username=data['username'], password=data['password'])
+
+            if account:
+                log.info('%s' % account.id)
+
+                headers = remember(self.request, account.id, max_age=86400000)
+                self.request.response.headerlist.extend(headers)
+
+                return { 'success': True }
+
+        return { 'error': 'login failed' }
+
+
+    @view_config(route_name='api_action', match_param='action=logout', renderer='json')
+    def api_login(self):
+
+        headers = forget(self.request)
+        self.request.response.headerlist.extend(headers)
+
+        return { 'logout': True }
