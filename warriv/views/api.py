@@ -71,7 +71,7 @@ class APIHandler(BaseHandler):
 
 
     @view_config(route_name='api_action', match_param='action=logout', renderer='json')
-    def api_login(self):
+    def api_logout(self):
 
         headers = forget(self.request)
         self.request.response.headerlist.extend(headers)
