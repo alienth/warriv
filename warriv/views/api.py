@@ -77,3 +77,17 @@ class APIHandler(BaseHandler):
         self.request.response.headerlist.extend(headers)
 
         return { 'logout': True }
+
+    @view_config(route_name='api_action', match_param='action=profile_settings', renderer='json')
+    def profile_settings(self):
+
+        if not self.loggedin:
+            return { 'error': 'must be logged in' }
+
+        data = self.request.POST
+
+        if 'battletag' in data:
+            self.account.battletag = data['battletag']
+
+        return {}
+
