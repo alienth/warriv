@@ -37,7 +37,10 @@ class Account(Base):
       return self._password
 
     def _set_password(self, password):
-      self._password = hash_password(password)
+      if password == '':
+        self._password = '!!'
+      else:
+        self._password = hash_password(password)
 
     password = property(_get_password, _set_password)
 
