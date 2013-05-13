@@ -29,7 +29,7 @@ class Account(Base):
     id = Column(Integer, primary_key=True)
     username = Column(Text, unique=True)
     password = Column(Text)
-    battetag = Column(Text)
+    battletag = Column(Text)
 
     _password = Column('password', Unicode(60))
 
