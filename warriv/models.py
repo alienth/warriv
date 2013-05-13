@@ -29,7 +29,7 @@ class Account(Base):
     id = Column(Integer, primary_key=True)
     username = Column(Text, unique=True)
     password = Column(Text)
-    bt = Column(Text)
+    battetag = Column(Text)
 
     _password = Column('password', Unicode(60))
 
@@ -57,9 +57,10 @@ class Account(Base):
         return False
 
 
-    def __init__(self, username='', password=''):
+    def __init__(self, username='', password='', battletag=''):
         self.username = username
         self.password = password
+        self.battletag = battletag
 
     @classmethod
     def by_username(cls, username):
@@ -76,10 +77,9 @@ class Hero(Base):
     name = Column(Text)
     ladder = Column(Integer)
 
-    def __init__(self, account_id='', name='', bt='', ladder=''):
+    def __init__(self, account_id='', name='', ladder=''):
         self.account_id = account_id
         self.name = name
-        self.bt = bt
         self.ladder = ladder
 
     def set_ladder(self, ladder):
