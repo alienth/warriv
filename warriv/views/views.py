@@ -26,6 +26,8 @@ import time
 class BaseHandler(object):
 
     loggedin = False
+    account = None
+    tmpl = {}
 
     def __init__(self, request):
 
@@ -38,18 +40,21 @@ class BaseHandler(object):
                 self.account = account
                 self.loggedin = True
 
+                self.tmpl['username'] = self.account.username
+
+        self.tmpl['loggedin'] = self.loggedin
         self.request = request
 
 
-@view_config(route_name='front', renderer='warriv:templates/front.pt')
-def front(request):
-    pass
-#    try:
-#        one = DBSession.query(Account).filter(Account.name == 'one').first()
-#    except DBAPIError:
-#        return Response(conn_err_msg, content_type='text/plain', status_int=500)
-#    return {'one': one, 'project': 'warriv'}
-    return {}
+class MainHandler(BaseHandler):
+
+    def __init__(self, request):
+        super(MainHandler, self).__init__(request)
+
+    @view_config(route_name='front', renderer='warriv:templates/front.pt')
+    def front(self):
+
+        return self.tmpl
 
 
 
