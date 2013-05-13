@@ -1,6 +1,25 @@
 <html>
   <body>
-hello
+    <head>
+       <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+    </head>
+
+    <div class='userbox'>
+
+      <span tal:condition="loggedin">${username}</span>
+
+      <div tal:condition="not loggedin" class='login'>
+        <span>
+          <a href="/oauth/login">Login or register with reddit</a>
+        </span>
+        <form action="/api/login" method="post">
+          username: <input type="text" name="username" />
+          password: <input type="password" name="password" />
+          <input type="submit" />
+        </form>
+      </div>
+
+    </div>
 
   </body>
 </html>
