@@ -64,6 +64,9 @@ class Account(Base):
     def by_username(cls, username):
         return DBSession.query(cls).filter(cls.username == username).first()
 
+    @classmethod
+    def by_id(cls, id):
+        return DBSession.query(cls).filter(cls.id == id).first()
 
 class Hero(Base):
     __tablename__ = 'hero'
