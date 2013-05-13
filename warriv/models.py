@@ -29,7 +29,6 @@ class Account(Base):
     id = Column(Integer, primary_key=True)
     username = Column(Text, unique=True)
     password = Column(Text)
-    oauth_token = Column(Text)
 
     _password = Column('password', Unicode(60))
 
@@ -54,10 +53,9 @@ class Account(Base):
         return False
 
 
-    def __init__(self, username='', password='', oauth_token=''):
+    def __init__(self, username='', password=''):
         self.username = username
         self.password = password
-        self.oauth_token = oauth_token
 
     @classmethod
     def by_username(cls, username):
