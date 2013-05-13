@@ -1,0 +1,17 @@
+<html>
+  <body>
+    <head>
+       <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+    </head>
+
+    <div>
+      <form action="/api/profile_settings" method="post">
+        battletag:
+        <span tal:switch="exists:battletag">
+          <span tal:case="True">${battletag}</span>
+          <input tal:case="False" type="text" name="battletag" />
+        </span>
+    </div>
+
+  </body>
+</html>

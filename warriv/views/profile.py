@@ -16,7 +16,7 @@ class ProfileHandler(BaseHandler):
     def __init__(self, request):
         super(ProfileHandler, self).__init__(request)
 
-    @view_config(route_name='profile_action', match_param='action=settings', renderer='warriv:templates/profile.pt')
+    @view_config(route_name='profile_action', match_param='action=settings', renderer='warriv:templates/profile_settings.pt')
     def settings(self):
 
         return self.tmpl
