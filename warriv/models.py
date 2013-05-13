@@ -29,6 +29,7 @@ class Account(Base):
     id = Column(Integer, primary_key=True)
     username = Column(Text, unique=True)
     password = Column(Text)
+    bt = Column(Text)
 
     _password = Column('password', Unicode(60))
 
@@ -73,7 +74,6 @@ class Hero(Base):
     id = Column(Integer, primary_key=True)
     account_id = Column(Integer)
     name = Column(Text)
-    bt = Column(Text)
     ladder = Column(Integer)
 
     def __init__(self, account_id='', name='', bt='', ladder=''):
