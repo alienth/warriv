@@ -103,14 +103,15 @@ class APIHandler(BaseHandler):
         # TODO: Sanitize this
         if 'battletag' in data:
             battletag = data['battletag']
-            heroes = get_all_careers(battletag).heroes
+            careers = get_all_careers(battletag)
 
-            for hero in heroes:
-                response.append(hero.__dict__)
+            if careers and 'heroes' in careers:
+                for hero in heroes:
+                    response.append(hero.__dict__)
 
             return response
 
-        return {}
+        return []
 
 
 
