@@ -57,12 +57,11 @@ class AllCareers(object):
     def __init__(self, careers):
         self.careers = careers
 
-    def heroes(self):
         heroes = []
         for career in self.careers:
-              heroes = heroes + career.heroes()
+              heroes = heroes + career.heroes
 
-        return heroes
+        self.heroes = heroes
 
 class Career(object):
 
@@ -70,13 +69,11 @@ class Career(object):
         self.data = data
         self.region = region
 
-    # For just one day
-    def heroes(self):
         heroes = []
         for herodata in self.data['heroes']:
             heroes.append(Hero(herodata, self.region))
 
-        return heroes
+        self.heroes = heroes
 
 class Hero(object):
 
