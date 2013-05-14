@@ -2,16 +2,22 @@ import json
 import requests
 
 RegionUS = { 'name': 'Americas',
+             'shortname': 'AM',
              'url':  'http://us.battle.net/',
            }
 
 RegionEU = { 'name': 'Europe',
+             'shortname': 'EU',
              'url':  'http://eu.battle.net/',
            }
 
 RegionAS = { 'name': 'Asia',
+             'shortname': 'AS',
              'url':  'http://kr.battle.net/',
            }
+
+GENDERMALE = 0
+GENDERFEMALE = 1
 
 AllRegions = [RegionUS, RegionEU, RegionAS]
 
@@ -33,7 +39,7 @@ def get_career(battletag, region = RegionUS):
             if data['code'] == 'NOTFOUND':
                 return None
 
-        return Career(data, region)
+        return Career(data, region['shortname'])
     else:
         raise IOError('error accessing battle.net api. status: %s' % req.status_code)
 
@@ -81,12 +87,17 @@ class Hero(object):
     hardcore = False
 
     def __init__(self, data, region):
-        self.data = data
         self.name = data['name']
         self.id = data['id']
         self.last_updated = data['last-updated']
+        self.gender = data['gender']
+        self.hero_class = data['class']
+        self.level = data['level']
+        self.paragon_level = data['paragonLevel']
+
 
         if data['hardcore']:
             self.hardcore = True
 
         self.region = region
+
