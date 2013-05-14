@@ -34,10 +34,8 @@ def get_career(battletag, region = RegionUS):
                 return None
 
         return Career(data, region)
-    elif req.status_code == 404:
-        raise IOError('career not found')
     else:
-        raise IOError('error accessing api')
+        raise IOError('error accessing battle.net api. status: %s' % req.status_code)
 
 
 
@@ -49,7 +47,10 @@ def get_all_careers(battletag):
         if career:
             careers.append(career)
 
-    return AllCareers(careers)
+    if len(careers) > 0:
+        return AllCareers(careers)
+    else:
+        return None
 
 
 class AllCareers(object):
