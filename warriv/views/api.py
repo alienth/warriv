@@ -93,25 +93,30 @@ class APIHandler(BaseHandler):
 
         return {}
 
-    @view_config(route_name='api_action', match_param='action=hero_summary', renderer='json')
-    def hero_summary(self):
+    @view_config(route_name='api_action', match_param='action=bnet_career_summary', renderer='json')
+    def bnet_career_summary(self):
+        """ Fetches career info from battle.net """
 
         data = self.request.POST
 
-        response = []
+        response = { 'battletag': '', 'heroes': [] }
 
         # TODO: Sanitize this
         if 'battletag' in data:
             battletag = data['battletag']
             careers = get_all_careers(battletag)
 
+            response['battletag'] = battletag
+
             if careers and 'heroes' in careers:
                 for hero in heroes:
-                    response.append(hero.__dict__)
+                    response['heroes'].append(hero.__dict__)
 
-            return response
+                return response
+            else:
+                return {}
 
-        return []
+        return {}
 
 
 
