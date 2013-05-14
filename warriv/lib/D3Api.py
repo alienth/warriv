@@ -10,7 +10,7 @@ RegionEU = { 'name': 'Europe',
            }
 
 RegionAS = { 'name': 'Asia',
-             'url':  'http://as.battle.net/',
+             'url':  'http://kr.battle.net/',
            }
 
 AllRegions = [RegionUS, RegionEU, RegionAS]
@@ -21,15 +21,19 @@ def battle_id(battletag):
 # Returns the career from the requested region.
 # If no region is requested, returns the career most used. (NYI, TODO)
 def get_career(battletag, region = RegionUS):
-    id = battle_id(battletag)
 
-    url = '%s/api/d3/profile/%s/' % (region['url'], id)
+    url = '%s/api/d3/profile/%s/' % (region['url'], battle_id(battletag))
 
     req = requests.get(url)
 
     if req.status_code == 200:
         data = json.loads(req.text)
-        return Career(data)
+
+        if 'code' in data:
+            if data['code'] == 'NOTFOUND':
+                return None
+
+        return Career(data, region)
     elif req.status_code == 404:
         raise IOError('career not found')
     else:
@@ -41,26 +45,50 @@ def get_all_careers(battletag):
 
     careers = []
     for region in AllRegions:
-        careers.append(get_career(battletag))
+        career = get_career(battletag, region=region)
+        if career:
+            careers.append(career)
 
-    return careers
+    return AllCareers(careers)
 
+
+class AllCareers(object):
+
+    def __init__(self, careers):
+        self.careers = careers
+
+    def heroes(self):
+        heroes = []
+        for career in self.careers:
+              heroes = heroes + career.heroes()
+
+        return heroes
 
 class Career(object):
 
-    def __init__(self, data):
+    def __init__(self, data, region):
         self.data = data
+        self.region = region
 
     # For just one day
     def heroes(self):
         heroes = []
         for herodata in self.data['heroes']:
-            heroes.append(Hero(herodata))
+            heroes.append(Hero(herodata, self.region))
 
         return heroes
 
 class Hero(object):
 
-    def __init__(self, data):
+    hardcore = False
+
+    def __init__(self, data, region):
         self.data = data
         self.name = data['name']
+        self.id = data['id']
+        self.last_updated = data['last-updated']
+
+        if data['hardcore']:
+            self.hardcore = True
+
+        self.region = region
