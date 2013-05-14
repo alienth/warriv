@@ -6,10 +6,12 @@ from pyramid.security import authenticated_userid, remember, forget
 from pyramid.httpexceptions import HTTPFound, HTTPForbidden
 
 from warriv.schema.default import RegistrationSchema
+from warriv.lib.D3Api import get_all_careers
 
 import logging
 log = logging.getLogger(__name__)
 
+import json
 
 from sqlalchemy.exc import DBAPIError
 
@@ -90,4 +92,25 @@ class APIHandler(BaseHandler):
             self.account.battletag = data['battletag']
 
         return {}
+
+    @view_config(route_name='api_action', match_param='action=hero_summary', renderer='json')
+    def hero_summary(self):
+
+        data = self.request.POST
+
+        response = []
+
+        # TODO: Sanitize this
+        if 'battletag' in data:
+            battletag = data['battletag']
+            heroes = get_all_careers(battletag).heroes
+
+            for hero in heroes:
+                response.append(hero.__dict__)
+
+            return response
+
+        return {}
+
+
 
